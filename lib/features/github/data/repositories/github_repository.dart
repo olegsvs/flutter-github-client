@@ -13,6 +13,7 @@ import 'package:flutter_github_test/features/github/domain/entities/github.dart'
 import 'package:flutter_github_test/features/github/domain/repositories/i_github_repository.dart';
 import 'package:flutter_github_test/features/github/domain/usecases/github_usecases.dart';
 import 'package:flutter_github_test/utils/utils.dart';
+import 'package:get_it/get_it.dart';
 import 'package:github/github.dart';
 import 'package:http/http.dart';
 import 'package:injectable/injectable.dart';
@@ -65,37 +66,13 @@ class HomeRepository implements IHomeRepository {
     _accounts.removeAt(index);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(StorageKeys.accounts, json.encode(_accounts));
-    // notifyListeners();
   }
 
   Future<void> setDefaultAccount(int v) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(StorageKeys.iDefaultAccount, v);
     Fimber.d('write default account: $v');
-    //notifyListeners();
   }
-
-/*  @override
-  Future<Either<Failure, List<Character>>> getCharacters(int page) async {
-    if (await _networkInfo.isConnected) {
-      try {
-        final models = await _remoteDataSource.getCharacters(page);
-        final entities = models.map<Character>((e) => e.toEntity()).toList();
-        await _localDataSource.cacheCharacters(models, page);
-        return Right(entities);
-      } on excpt.ServerException {
-        return Left(ServerFailure());
-      }
-    } else {
-      try {
-        final models = _localDataSource.getLastCharacters(page);
-        final entities = models.map<Character>((e) => e.toEntity()).toList();
-        return Right(entities);
-      } on CacheException {
-        return Left(CacheFailure());
-      }
-    }
-  }*/
 
   @override
   Future<Either<Failure, GithubEvent>> getGithubEvent() {
@@ -135,11 +112,15 @@ class HomeRepository implements IHomeRepository {
           .map((item) => AccountModel.fromJson(item).toEntity())
           .toList();
       activeAccountIndex = prefs.getInt(StorageKeys.iDefaultAccount);
+      _remoteDataSource.init(token);
       account = _accounts[activeAccountIndex == null ? 0 : activeAccountIndex!];
+      Fimber.d("try account ${account.login}");
     } catch (err) {
       Fimber.e('prefs getAccount failed', ex: err);
       _accounts = [];
     }
+    var login = account?.login != null ? account?.login : "";
+    Fimber.d("return account: ${login}");
     return account;
   }
 
@@ -183,6 +164,7 @@ class HomeRepository implements IHomeRepository {
     await closeWebView();
     String token = await _remoteDataSource.getTokenFromOAuth(
         uri, clientId, clientSecret, _oauthState);
+    _remoteDataSource.init(token);
     await loginWithToken(token);
   }
 

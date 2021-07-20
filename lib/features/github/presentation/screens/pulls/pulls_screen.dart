@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_github_test/core/graph_ql/github.data.gql.dart';
 import 'package:flutter_github_test/core/graph_ql/github.req.gql.dart';
 import 'package:flutter_github_test/core/graph_ql/github.var.gql.dart';
+import 'package:flutter_github_test/core/injection/injection.dart';
 import 'package:flutter_github_test/features/github/presentation/scaffolds/list_stateful.dart';
 import 'package:flutter_github_test/features/github/presentation/screens/pulls/pulls_bloc.dart';
 import 'package:flutter_github_test/features/github/presentation/widgets/app_bar_title.dart';
@@ -19,7 +20,9 @@ class GhPullsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PullsBloc, PullsState>(builder: (context, state) {
+    return BlocProvider<PullsBloc>(
+        create: (_) => getIt(),
+        child: BlocBuilder<PullsBloc, PullsState>(builder: (context, state) {
       return ListStatefulScaffold<GPullsData_repository_pullRequests_nodes,
           String?>(
         title: AppBarTitle(AppLocalizations.of(context)!.pullRequests),
@@ -53,6 +56,6 @@ class GhPullsScreen extends StatelessWidget {
           url: '/github/$owner/$name/pull/${p.number}',
         ),
       );
-    });
+    }));
   }
 }

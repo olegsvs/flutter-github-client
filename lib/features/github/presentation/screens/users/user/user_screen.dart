@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_github_test/core/graph_ql/github.data.gql.dart';
 import 'package:flutter_github_test/core/graph_ql/github.req.gql.dart';
 import 'package:flutter_github_test/core/graph_ql/github.var.gql.dart';
+import 'package:flutter_github_test/core/injection/injection.dart';
 import 'package:flutter_github_test/features/github/data/repositories/github_repository.dart';
 import 'package:flutter_github_test/features/github/presentation/screens/users/user/user_bloc.dart';
 import 'package:flutter_github_test/features/internal/theme.dart';
@@ -30,7 +31,7 @@ class _Repos extends StatelessWidget {
 
   _Repos(final Iterable<GRepoItem> pinned, final Iterable<GRepoItem>? repos)
       : title =
-  pinned.isNotEmpty ? 'pinned repositories' : 'popular repositories',
+            pinned.isNotEmpty ? 'pinned repositories' : 'popular repositories',
         repos = pinned.isNotEmpty ? pinned : repos;
 
   @override
@@ -65,6 +66,7 @@ class _User extends StatelessWidget {
   final GUserParts? p;
   final bool isViewer;
   final List<Widget> rightWidgets;
+
   AppModel get theme => GetIt.instance.get<AppModel>();
 
   const _User(this.p, {this.isViewer = false, this.rightWidgets = const []});
@@ -112,7 +114,7 @@ class _User extends StatelessWidget {
         ContributionWidget(
           weeks: [
             for (final week
-            in p!.contributionsCollection.contributionCalendar.weeks)
+                in p!.contributionsCollection.contributionCalendar.weeks)
               [
                 for (final day in week.contributionDays)
                   ContributionDay(hexColor: day.color)
@@ -271,22 +273,24 @@ class _Org extends StatelessWidget {
 }
 
 class GhViewer extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<UserBloc, UserState>(builder: (context, state) {
-    return RefreshStatefulScaffold<GUserParts?>(
-      fetch: () async {
-        final req = GViewerReq();
-        Fimber.d("getViewer");
-        return await context.read<UserBloc>().getViewer(req);
-      },
-      title: AppBarTitle(AppLocalizations.of(context)!.me),
-      bodyBuilder: (p, _) {
-        return _User(p, isViewer: true);
-      },
-    );
-  });}
+    return BlocProvider<UserBloc>(
+        create: (_) => getIt(),
+        child: BlocBuilder<UserBloc, UserState>(builder: (context, state) {
+          return RefreshStatefulScaffold<GUserParts?>(
+            fetch: () async {
+              final req = GViewerReq();
+              Fimber.d("getViewer");
+              return await context.read<UserBloc>().getViewer(req);
+            },
+            title: AppBarTitle(AppLocalizations.of(context)!.me),
+            bodyBuilder: (p, _) {
+              return _User(p, isViewer: true);
+            },
+          );
+        }));
+  }
 }
 
 class GhUser extends StatelessWidget {
@@ -310,7 +314,7 @@ class GhUser extends StatelessWidget {
         );
       },
       bodyBuilder: (data, setData) {
-        if(data!.repositoryOwner == null) {
+        if (data!.repositoryOwner == null) {
           return Container();
         }
         if (data!.repositoryOwner!.G__typename == 'User') {
@@ -332,7 +336,7 @@ class GhUser extends StatelessWidget {
                     }
                     setData(data.rebuild((b) {
                       final u = b.repositoryOwner
-                      as GUserData_repositoryOwner__asUser;
+                          as GUserData_repositoryOwner__asUser;
                       b.repositoryOwner = u.rebuild((b1) {
                         b1.viewerIsFollowing = !b1.viewerIsFollowing!;
                       });
@@ -343,7 +347,7 @@ class GhUser extends StatelessWidget {
           );
         } else {
           return _Org(data.repositoryOwner
-          as GUserData_repositoryOwner__asOrganization?);
+              as GUserData_repositoryOwner__asOrganization?);
         }
       },
     );

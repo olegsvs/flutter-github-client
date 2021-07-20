@@ -7,6 +7,7 @@ import 'package:flutter_github_test/core/graph_ql/github.req.gql.dart';
 import 'package:flutter_github_test/core/graph_ql/gql_query.dart';
 import 'package:flutter_github_test/features/github/data/models/github_model.dart';
 import 'package:flutter_github_test/features/github/domain/usecases/github_usecases.dart';
+import 'package:flutter_github_test/utils/ferry_store.dart';
 import 'package:github/github.dart';
 import 'package:github/github.dart' as github;
 import 'package:gql_http_link/gql_http_link.dart';
@@ -16,6 +17,8 @@ import 'package:injectable/injectable.dart';
 import 'package:universal_io/io.dart';
 
 abstract class IGithubRemoteDataSource {
+  Future init(String? token);
+
   Future<String> getTokenFromOAuth(
       Uri? uri, String clientId, String clientSecret, String? oauthState);
 
@@ -81,10 +84,32 @@ final _apiPrefix = 'https://api.github.com';
 class GithubRemoteDataSource implements IGithubRemoteDataSource {
   String? token;
 
-  GithubRemoteDataSource(this._ghClient, this._gqlClient);
+  GithubRemoteDataSource(this._ghClient, this.gqlTest);
 
-  final Client _gqlClient;
+  final Client gqlTest;
   final GitHub _ghClient;
+  Client? _gqlClient = null;
+  @override
+  Future init(String? _token) async {
+    token = _token;
+    Fimber.d("init Token: ${token}");
+    _ghClient.auth = Authentication.withToken(token);
+    _gqlClient = Client(
+      link: HttpLink(
+          _apiPrefix + '/graphql',
+          defaultHeaders: {HttpHeaders.authorizationHeader: 'token ${token}'},
+      ),
+      cache: Cache(store: FerryStore()),
+    );
+    gqlTest.link.concat(
+      HttpLink(
+        _apiPrefix + '/graphql',
+        defaultHeaders: {HttpHeaders.authorizationHeader: 'token ${token}'},
+      ),
+    );
+    Fimber.d("get viewer: ${(_gqlClient!.link as HttpLink).defaultHeaders.toString()}");
+
+  }
 
   @override
   Future<List<GithubEventModel>> getEvents(
@@ -206,7 +231,7 @@ class GithubRemoteDataSource implements IGithubRemoteDataSource {
   @override
   Future<GUserData?> getUser(GUserReq req) async {
     try {
-      var res = await _gqlClient.request(req).first;
+      var res = await _gqlClient!.request(req).first;
       return res.data;
     } on Exception catch (exception) {
       print(exception);
@@ -217,7 +242,11 @@ class GithubRemoteDataSource implements IGithubRemoteDataSource {
   @override
   Future<GViewerData_viewer> getViewer(GViewerReq req) async {
     try {
-      var res = await _gqlClient.request(req).first;
+      Fimber.d("req: ${req.toJson()}");
+      var res = await _gqlClient!.request(req).first;
+      Fimber.d("get viewer: ${res.toString()}");
+      Fimber.d("get viewer: ${(_gqlClient!.link as HttpLink).defaultHeaders.toString()}");
+      Fimber.d("get viewer: ${res.data.toString()}");
       return res.data!.viewer;
     } on Exception catch (exception) {
       print(exception);
@@ -283,7 +312,6 @@ class GithubRemoteDataSource implements IGithubRemoteDataSource {
       throw 'token is null';
     }
 
-
     final res = await http
         .post(Uri.parse(_apiPrefix + '/graphql'),
             headers: {
@@ -330,7 +358,7 @@ class GithubRemoteDataSource implements IGithubRemoteDataSource {
       Fimber.d("loginWithToken: ${token}");
       final queryData = await query(GqlQuery.loginWithTokenQuery, token);
       _ghClient.auth = Authentication.withToken(token);
-      _gqlClient.link.concat(
+      _gqlClient!.link.concat(
         HttpLink(
           _apiPrefix + '/graphql',
           defaultHeaders: {HttpHeaders.authorizationHeader: 'token $token'},
@@ -346,7 +374,7 @@ class GithubRemoteDataSource implements IGithubRemoteDataSource {
   @override
   Future<GCommitsRefCommit_history> getCommits(GCommitsReq req) async {
     try {
-      var res = await _gqlClient.request(req).first;
+      var res = await _gqlClient!.request(req).first;
       final ref =
           res.data!.repository!.defaultBranchRef ?? res.data!.repository!.ref!;
       return (ref.target as GCommitsRefCommit).history;
@@ -359,7 +387,7 @@ class GithubRemoteDataSource implements IGithubRemoteDataSource {
   @override
   Future<GStarsData_user_starredRepositories> getStars(GStarsReq req) async {
     try {
-      var res = await _gqlClient.request(req).first;
+      var res = await _gqlClient!.request(req).first;
       final ref = res.data!.user!.starredRepositories;
       return ref;
     } on Exception catch (exception) {
@@ -371,7 +399,7 @@ class GithubRemoteDataSource implements IGithubRemoteDataSource {
   @override
   Future<GReposData_user_repositories> getRepos(GReposReq req) async {
     try {
-      var res = await _gqlClient.request(req).first;
+      var res = await _gqlClient!.request(req).first;
       final ref = res.data!.user!.repositories;
       return ref;
     } on Exception catch (exception) {
@@ -383,7 +411,7 @@ class GithubRemoteDataSource implements IGithubRemoteDataSource {
   @override
   Future<GPullsData_repository_pullRequests> getPulls(GPullsReq req) async {
     try {
-      var res = await _gqlClient.request(req).first;
+      var res = await _gqlClient!.request(req).first;
       final ref = res.data!.repository!.pullRequests;
       return ref;
     } on Exception catch (exception) {
@@ -395,7 +423,7 @@ class GithubRemoteDataSource implements IGithubRemoteDataSource {
   @override
   Future<GRepoData_repository?> getRepo(GRepoReq req) async {
     try {
-      var res = await _gqlClient.request(req).first;
+      var res = await _gqlClient!.request(req).first;
       final ref = res.data!.repository;
       return ref;
     } on Exception catch (exception) {
@@ -408,7 +436,7 @@ class GithubRemoteDataSource implements IGithubRemoteDataSource {
   Future<GReleasesData_repository_releases> getReleases(
       GReleasesReq req) async {
     try {
-      var res = await _gqlClient.request(req).first;
+      var res = await _gqlClient!.request(req).first;
       final ref = res.data!.repository!.releases;
       return ref;
     } on Exception catch (exception) {
@@ -420,7 +448,7 @@ class GithubRemoteDataSource implements IGithubRemoteDataSource {
   @override
   Future<GGistsData_user_gists> getGists(GGistsReq req) async {
     try {
-      var res = await _gqlClient.request(req).first;
+      var res = await _gqlClient!.request(req).first;
       return res.data!.user!.gists;
     } on Exception catch (exception) {
       print(exception);
@@ -431,7 +459,7 @@ class GithubRemoteDataSource implements IGithubRemoteDataSource {
   @override
   Future<GGistData_user_gist?> getGistFiles(GGistReq req) async {
     try {
-      var res = await _gqlClient.request(req).first;
+      var res = await _gqlClient!.request(req).first;
       return res.data!.user!.gist;
     } on Exception catch (exception) {
       print(exception);
@@ -442,7 +470,7 @@ class GithubRemoteDataSource implements IGithubRemoteDataSource {
   @override
   Future<GIssuesData_repository_issues> getIssues(GIssuesReq req) async {
     try {
-      var res = await _gqlClient.request(req).first;
+      var res = await _gqlClient!.request(req).first;
       return res.data!.repository!.issues;
     } on Exception catch (exception) {
       print(exception);
@@ -453,7 +481,7 @@ class GithubRemoteDataSource implements IGithubRemoteDataSource {
   @override
   Future<GIssueData_repository> queryIssue(GIssueReq req) async {
     try {
-      var res = await _gqlClient.request(req).first;
+      var res = await _gqlClient!.request(req).first;
       return res.data!.repository!;
     } on Exception catch (exception) {
       print(exception);

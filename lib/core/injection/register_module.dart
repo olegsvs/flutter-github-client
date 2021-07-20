@@ -17,7 +17,6 @@ abstract class RegisterModule {
         link: HttpLink(
           '',
         ),
-        
         cache: Cache(store: FerryStore()),
       );
 

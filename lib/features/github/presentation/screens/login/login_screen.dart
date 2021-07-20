@@ -1,6 +1,7 @@
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_github_test/core/injection/injection.dart';
 import 'package:flutter_github_test/features/github/domain/entities/account.dart';
 import 'package:flutter_github_test/features/github/presentation/scaffolds/single.dart';
 import 'package:flutter_github_test/features/github/presentation/widgets/action_button.dart';
@@ -23,53 +24,60 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
-      Fimber.d(
-          "LoginScreen: new state ${state.toString()}; type: ${state.runtimeType}");
-      if (state is InitState) {
-        Fimber.d("InitState");
-        context.read<LoginBloc>().add(LoginEvent.getAccounts());
-        return SingleScaffold(
-            title: AppBarTitle(AppLocalizations.of(context)!.selectAccount),
-            body: Center(child: Loading()));
-      }
-      if(state is OnActiveAccountChanged) {
-        theme.reloadApp();
-        return Container();
-      }
-      if (state is GetSavedAccounts) {
-        Fimber.d("GetSavedAccounts, accounts: ${state.accounts}");
-        return SingleScaffold(
-            title: AppBarTitle(AppLocalizations.of(context)!.selectAccount),
-            body: Container(
-              child: Column(
-                children: [
-                  ...List.generate(state.accounts.length,(index){
-                    return _buildAccountItem(index, state.accounts[index], state.selectedAccountIndex, context);
-                  }),
-                  _buildAddItem(
-                    text: AppLocalizations.of(context)!.githubAccount,
-                    brand: Ionicons.logo_github,
-                    onTap: () async {
-                      print("on account tap");
-                      context.read<LoginBloc>().add(LoginEvent.openGithubOAuth());
-                    },
-                  ),
-                  Container(
-                    padding: CommonStyle.padding,
-                    child: Text(
-                      AppLocalizations.of(context)!.longPressToRemoveAccount,
-                      style: TextStyle(
-                        fontSize: 16, color: theme.palette.secondaryText,
+    return BlocProvider<LoginBloc>(
+        create: (_) => getIt(),
+        child: BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
+          Fimber.d(
+              "LoginScreen: new state ${state.toString()}; type: ${state.runtimeType}");
+          if (state is InitState) {
+            Fimber.d("InitState");
+            context.read<LoginBloc>().add(LoginEvent.getAccounts());
+            return SingleScaffold(
+                title: AppBarTitle(AppLocalizations.of(context)!.selectAccount),
+                body: Center(child: Loading()));
+          }
+          if (state is OnActiveAccountChanged) {
+            theme.reloadApp();
+            return Container();
+          }
+          if (state is GetSavedAccounts) {
+            Fimber.d("GetSavedAccounts, accounts: ${state.accounts}");
+            return SingleScaffold(
+                title: AppBarTitle(AppLocalizations.of(context)!.selectAccount),
+                body: Container(
+                  child: Column(
+                    children: [
+                      ...List.generate(state.accounts.length, (index) {
+                        return _buildAccountItem(index, state.accounts[index],
+                            state.selectedAccountIndex, context);
+                      }),
+                      _buildAddItem(
+                        text: AppLocalizations.of(context)!.githubAccount,
+                        brand: Ionicons.logo_github,
+                        onTap: () async {
+                          print("on account tap");
+                          context
+                              .read<LoginBloc>()
+                              .add(LoginEvent.openGithubOAuth());
+                        },
                       ),
-                    ),
-                  )
-                ],
-              ),
-            ));
-      }
-      throw ArgumentError("LoginScreen: Unknown state");
-    });
+                      Container(
+                        padding: CommonStyle.padding,
+                        child: Text(
+                          AppLocalizations.of(context)!
+                              .longPressToRemoveAccount,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: theme.palette.secondaryText,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ));
+          }
+          throw ArgumentError("LoginScreen: Unknown state");
+        }));
   }
 
   Widget _buildAddItem(
@@ -78,8 +86,7 @@ class LoginScreen extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 20),
         decoration: BoxDecoration(
-          border: Border(
-              bottom: BorderSide(color: theme.palette.border)),
+          border: Border(bottom: BorderSide(color: theme.palette.border)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -96,11 +103,14 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAccountItem(int index, Account account, int selectedAccountIndex, BuildContext context) {
+  Widget _buildAccountItem(int index, Account account, int selectedAccountIndex,
+      BuildContext context) {
     return LinkWidget(
       onTap: () {
         print("on tap on account");
-        context.read<LoginBloc>().add(LoginEvent.setActiveAccountAndReload(index));
+        context
+            .read<LoginBloc>()
+            .add(LoginEvent.setActiveAccountAndReload(index));
       },
       onLongPress: () {
         print("on long tap on account");
@@ -117,8 +127,7 @@ class LoginScreen extends StatelessWidget {
       child: Container(
         padding: CommonStyle.padding,
         decoration: BoxDecoration(
-          border: Border(
-              bottom: BorderSide(color: theme.palette.border)),
+          border: Border(bottom: BorderSide(color: theme.palette.border)),
         ),
         child: Row(
           children: <Widget>[
@@ -130,14 +139,12 @@ class LoginScreen extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     account.login,
-                    style: TextStyle(
-                        fontSize: 20, color: theme.palette.text),
+                    style: TextStyle(fontSize: 20, color: theme.palette.text),
                   ),
                   Padding(padding: EdgeInsets.only(top: 6)),
                   Text(
                     account.domain,
-                    style:
-                        TextStyle(color: theme.palette.secondaryText),
+                    style: TextStyle(color: theme.palette.secondaryText),
                   )
                 ],
               ),

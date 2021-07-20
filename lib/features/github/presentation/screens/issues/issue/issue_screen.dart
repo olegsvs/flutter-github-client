@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_github_test/core/graph_ql/github.data.gql.dart';
 import 'package:flutter_github_test/core/graph_ql/github.req.gql.dart';
+import 'package:flutter_github_test/core/injection/injection.dart';
 import 'package:flutter_github_test/features/github/presentation/scaffolds/long_list.dart';
 import 'package:flutter_github_test/features/github/presentation/widgets/action_button.dart';
 import 'package:flutter_github_test/features/github/presentation/widgets/avatar.dart';
@@ -101,7 +102,9 @@ class GhIssueScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<IssueBloc, IssueState>(builder: (context, state) {
+    return BlocProvider<IssueBloc>(
+        create: (_) => getIt(),
+    child: BlocBuilder<IssueBloc, IssueState>(builder: (context, state) {
       return LongListStatefulScaffold<GIssueData_repository, dynamic>(
         title: Text('$owner/$name #$number'),
         trailingBuilder: (p) {
@@ -248,6 +251,6 @@ class GhIssueScreen extends StatelessWidget {
           }
         },
       );
-    });
+    }));
   }
 }

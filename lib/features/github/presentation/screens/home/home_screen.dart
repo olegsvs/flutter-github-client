@@ -26,6 +26,7 @@ class HomeScreen extends StatelessWidget {
 
   _buildScreen(int index, Account? account) {
     if (account == null) {
+      Fimber.d("_buildScreen null");
       return LoginScreen();
     }
     switch (account.platform) {

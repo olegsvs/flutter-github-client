@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_github_test/core/injection/injection.dart';
 import 'package:flutter_github_test/features/github/presentation/scaffolds/common.dart';
 import 'package:flutter_github_test/features/internal/theme.dart';
 import 'package:flutter_github_test/utils/utils.dart';
@@ -21,58 +22,60 @@ class GhIssueFormScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<IssueFormBloc, IssueFormState>(
-        builder: (context, state) {
-      return CommonScaffold(
-        title: Text('Submit an issue'),
-        body: Column(
-          children: <Widget>[
-            Padding(
-              padding: CommonStyle.padding,
-              child: CupertinoTextField(
-                style: TextStyle(color: theme.palette.text),
-                placeholder: 'Title',
-                onChanged: (v) {
-                  _title = v;
-                  //TODO check
-                  /*setState(() {
+    return BlocProvider<IssueFormBloc>(
+        create: (_) => getIt(),
+        child: BlocBuilder<IssueFormBloc, IssueFormState>(
+            builder: (context, state) {
+          return CommonScaffold(
+            title: Text('Submit an issue'),
+            body: Column(
+              children: <Widget>[
+                Padding(
+                  padding: CommonStyle.padding,
+                  child: CupertinoTextField(
+                    style: TextStyle(color: theme.palette.text),
+                    placeholder: 'Title',
+                    onChanged: (v) {
+                      _title = v;
+                      //TODO check
+                      /*setState(() {
                     _title = v;
                   });*/
-                },
-              ),
-            ),
-            Padding(
-              padding: CommonStyle.padding,
-              child: CupertinoTextField(
-                style: TextStyle(color: theme.palette.text),
-                placeholder: 'Body',
-                onChanged: (v) {
-                  _body = v;
-                  //TODO check
-                  /*setState(() {
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: CommonStyle.padding,
+                  child: CupertinoTextField(
+                    style: TextStyle(color: theme.palette.text),
+                    placeholder: 'Body',
+                    onChanged: (v) {
+                      _body = v;
+                      //TODO check
+                      /*setState(() {
                     _body = v;
                   });*/
-                },
-                maxLines: 10,
-              ),
+                    },
+                    maxLines: 10,
+                  ),
+                ),
+                CupertinoButton.filled(
+                  child: Text('Submit'),
+                  onPressed: () async {
+                    final number = await context
+                        .read<IssueFormBloc>()
+                        .createIssue(owner, name, _title, _body);
+                    await theme.push(
+                      context,
+                      '/github/${owner}/${name}/issues/${number}',
+                      replace: true,
+                    );
+                  },
+                ),
+              ],
             ),
-            CupertinoButton.filled(
-              child: Text('Submit'),
-              onPressed: () async {
-                final number = await context
-                    .read<IssueFormBloc>()
-                    .createIssue(owner, name, _title, _body);
-                await theme.push(
-                  context,
-                  '/github/${owner}/${name}/issues/${number}',
-                  replace: true,
-                );
-              },
-            ),
-          ],
-        ),
-      );
-    });
+          );
+        }));
   }
 }
 

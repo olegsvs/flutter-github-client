@@ -1,18 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/S.dart';
 import 'package:flutter_github_test/features/github/presentation/screens/home/home_screen.dart';
-import 'package:flutter_github_test/features/github/presentation/screens/login/login_screen.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/locale.dart' as l;
-import 'package:flutter_gen/gen_l10n/S.dart';
 
+import 'core/injection/injection.dart';
 import 'features/github/presentation/screens/home/home_bloc.dart';
-import 'injection_container.dart';
 import 'features/internal/theme.dart';
 
 class MyApp extends StatelessWidget {
-
   AppModel get theme => GetIt.instance.get<AppModel>();
 
   @override
@@ -48,33 +46,32 @@ class MyApp extends StatelessWidget {
       key: theme.rootKey,
       child: theme.theme == AppThemeType.cupertino
           ? CupertinoApp(
-        theme: CupertinoThemeData(brightness: Brightness.light),
-        home: HomeScreen(),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        localeListResolutionCallback: localeListResolutionCallback,
-      )
+              theme: CupertinoThemeData(brightness: Brightness.light),
+              home: HomeScreen(),
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              localeListResolutionCallback: localeListResolutionCallback,
+            )
           : MaterialApp(
-        theme: ThemeData(
-          brightness: Brightness.light,
-          primaryColor:
-          Colors.white,
-          accentColor: theme.palette.primary,
-          scaffoldBackgroundColor: theme.palette.background,
-          pageTransitionsTheme: PageTransitionsTheme(
-            builders: {
-              TargetPlatform.android: ZoomPageTransitionsBuilder(),
-            },
-          ),
-        ),
-        home: BlocProvider<HomeBloc>(
-          create: (_) => getIt(),
-          child: HomeScreen(),
-        ),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        localeListResolutionCallback: localeListResolutionCallback,
-      ),
+              theme: ThemeData(
+                brightness: Brightness.light,
+                primaryColor: Colors.white,
+                accentColor: theme.palette.primary,
+                scaffoldBackgroundColor: theme.palette.background,
+                pageTransitionsTheme: PageTransitionsTheme(
+                  builders: {
+                    TargetPlatform.android: ZoomPageTransitionsBuilder(),
+                  },
+                ),
+              ),
+              home: BlocProvider<HomeBloc>(
+                create: (_) => getIt(),
+                child: HomeScreen(),
+              ),
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              localeListResolutionCallback: localeListResolutionCallback,
+            ),
     );
   }
 }
