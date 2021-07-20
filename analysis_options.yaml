@@ -9,6 +9,7 @@ analyzer:
     - lib/**/*.gr.dart
     - lib/**/*.config.dart
     - lib/**/*.g.dart
+    - lib/**/*.gql.dart
     - lib/**/*.freezed.dart
 
   errors:
