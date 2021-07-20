@@ -1,19 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_github_test/features/github/presentation/screens/home/home_screen.dart';
+import 'package:flutter_github_test/features/github/presentation/screens/login/login_screen.dart';
+import 'package:get_it/get_it.dart';
 import 'package:intl/locale.dart' as l;
-import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/S.dart';
 
-import 'home.dart';
-import 'models/login.dart';
-import 'models/theme.dart';
+import 'features/github/presentation/screens/home/home_bloc.dart';
+import 'injection_container.dart';
+import 'features/internal/theme.dart';
 
 class MyApp extends StatelessWidget {
+
+  AppModel get theme => GetIt.instance.get<AppModel>();
+
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<LoginModel>(context);
-    final theme = Provider.of<ThemeModel>(context);
-
     final LocaleListResolutionCallback localeListResolutionCallback =
         (locales, supportedLocales) {
       try {
@@ -42,11 +45,11 @@ class MyApp extends StatelessWidget {
     };
 
     return Container(
-      key: auth.rootKey,
+      key: theme.rootKey,
       child: theme.theme == AppThemeType.cupertino
           ? CupertinoApp(
         theme: CupertinoThemeData(brightness: Brightness.light),
-        home: Home(),
+        home: HomeScreen(),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         localeListResolutionCallback: localeListResolutionCallback,
@@ -64,7 +67,10 @@ class MyApp extends StatelessWidget {
             },
           ),
         ),
-        home: Home(),
+        home: BlocProvider<HomeBloc>(
+          create: (_) => getIt(),
+          child: HomeScreen(),
+        ),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         localeListResolutionCallback: localeListResolutionCallback,

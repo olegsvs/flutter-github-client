@@ -39,13 +39,36 @@ dependencies:
   uri: ^1.0.0
   url_launcher: ^6.0.3
   webview_flutter: ^2.0.4
+  equatable: ^2.0.3
+  dartz: ^0.10.0-nullsafety.2
+
+  # Dart data class
+  json_serializable: ^4.1.3
+  freezed_annotation: ^0.14.2
+
+  # Dependency Injection
+  get_it: ^7.2.0
+  injectable: ^1.4.1
+
+  # State management
+  bloc: ^7.0.0
+  flutter_bloc: ^7.0.1
+
+  internet_connection_checker: ^0.0.1+1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^2.0.3
+
+  # Codegen
+  freezed: ^0.14.2
+  injectable_generator: ^1.4.1
+  build_runner: ^2.0.4
   ferry_generator: ^0.4.2
-  json_serializable: ^4.1.2
+
+  # Testing
+  #bloc_test: ^7.1.0
+  #mockito: ^4.1.1
 
 flutter:
   generate: true

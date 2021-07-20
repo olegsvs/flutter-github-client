@@ -20,41 +20,5 @@ class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
   final messages = _notInlinedMessages(_notInlinedMessages);
-  static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "actions": MessageLookupByLibrary.simpleMessage("Actions"),
-        "branches": MessageLookupByLibrary.simpleMessage("Branches"),
-        "commits": MessageLookupByLibrary.simpleMessage("Commits"),
-        "contributors": MessageLookupByLibrary.simpleMessage("Contributors"),
-        "events": MessageLookupByLibrary.simpleMessage("Events"),
-        "files": MessageLookupByLibrary.simpleMessage("Files"),
-        "follow": MessageLookupByLibrary.simpleMessage("Follow"),
-        "followers": MessageLookupByLibrary.simpleMessage("Followers"),
-        "following": MessageLookupByLibrary.simpleMessage("Following"),
-        "forks": MessageLookupByLibrary.simpleMessage("Forks"),
-        "gists": MessageLookupByLibrary.simpleMessage("Gists"),
-        "githubAccount": MessageLookupByLibrary.simpleMessage("GitHub Account"),
-        "issues": MessageLookupByLibrary.simpleMessage("Issues"),
-        "longPressToRemoveAccount": MessageLookupByLibrary.simpleMessage(
-            "Long Press to remove account"),
-        "me": MessageLookupByLibrary.simpleMessage("Me"),
-        "members": MessageLookupByLibrary.simpleMessage("Members"),
-        "news": MessageLookupByLibrary.simpleMessage("News"),
-        "notFoundMessage": MessageLookupByLibrary.simpleMessage("Not found"),
-        "notFoundTextDisplay": MessageLookupByLibrary.simpleMessage(
-            "Oops, this page is not implemented yet."),
-        "organizations": MessageLookupByLibrary.simpleMessage("Organizations"),
-        "projects": MessageLookupByLibrary.simpleMessage("Projects"),
-        "pullRequests": MessageLookupByLibrary.simpleMessage("Pull requests"),
-        "removeAccount": MessageLookupByLibrary.simpleMessage("Remove account"),
-        "repositories": MessageLookupByLibrary.simpleMessage("Repositories"),
-        "repository": MessageLookupByLibrary.simpleMessage("Repository"),
-        "repositoryActions":
-            MessageLookupByLibrary.simpleMessage("Repository Actions"),
-        "selectAccount": MessageLookupByLibrary.simpleMessage("Select account"),
-        "somethingBadHappens":
-            MessageLookupByLibrary.simpleMessage("Something bad happens:"),
-        "stars": MessageLookupByLibrary.simpleMessage("Stars"),
-        "unfollow": MessageLookupByLibrary.simpleMessage("Unfollow"),
-        "watchers": MessageLookupByLibrary.simpleMessage("Watchers")
-      };
+  static Map<String, Function> _notInlinedMessages(_) => <String, Function>{};
 }

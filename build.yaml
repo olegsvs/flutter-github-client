@@ -6,7 +6,7 @@ targets:
       gql_build|schema_builder:
         enabled: true
         options:
-          schema: flutter_github_test|lib/graph_ql/schema.graphql
+          schema: flutter_github_test|lib/core/graph_ql/schema.graphql
           type_overrides:
             DateTime:
               name: DateTime
@@ -17,7 +17,7 @@ targets:
       gql_build|data_builder:
         enabled: true
         options:
-          schema: flutter_github_test|lib/graph_ql/schema.graphql
+          schema: flutter_github_test|lib/core/graph_ql/schema.graphql
           type_overrides:
             DateTime:
               name: DateTime
@@ -28,7 +28,7 @@ targets:
       gql_build|var_builder:
         enabled: true
         options:
-          schema: flutter_github_test|lib/graph_ql/schema.graphql
+          schema: flutter_github_test|lib/core/graph_ql/schema.graphql
           type_overrides:
             DateTime:
               name: DateTime
@@ -39,14 +39,14 @@ targets:
       gql_build|serializer_builder:
         enabled: true
         options:
-          schema: flutter_github_test|lib/graph_ql/schema.graphql
+          schema: flutter_github_test|lib/core/graph_ql/schema.graphql
           custom_serializers:
             - import: package:flutter_github_test/utils/date_time_serializer.dart
               name: DateTimeSerializer
       ferry_generator|req_builder:
         enabled: true
         options:
-          schema: flutter_github_test|lib/graph_ql/schema.graphql
+          schema: flutter_github_test|lib/core/graph_ql/schema.graphql
           type_overrides:
             DateTime:
               name: DateTime

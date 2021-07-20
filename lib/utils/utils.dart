@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_github_test/models/theme.dart';
-import 'package:flutter_github_test/widgets/border_view.dart';
+import 'package:flutter_github_test/features/github/presentation/widgets/border_view.dart';
+import 'package:get_it/get_it.dart';
+import '../features/internal/theme.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:universal_io/io.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -60,12 +60,13 @@ Color getFontColorByBrightness(Color color) {
   return showWhite ? Colors.white : Colors.black;
 }
 
+AppModel get theme => GetIt.instance.get<AppModel>();
+
 TextSpan createLinkSpan(
     BuildContext context,
     String? text,
     String url,
     ) {
-  final theme = Provider.of<ThemeModel>(context);
   return TextSpan(
     text: text,
     style: TextStyle(
@@ -143,10 +144,10 @@ class PrimerBranchName extends StatelessWidget {
   PrimerBranchName(this.name);
 
   static const branchBgColor = Color(0xffeaf5ff);
+  AppModel get theme => GetIt.instance.get<AppModel>();
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeModel>(context);
     return Container(
       padding: EdgeInsets.symmetric(vertical: 2, horizontal: 4),
       height: 16,
