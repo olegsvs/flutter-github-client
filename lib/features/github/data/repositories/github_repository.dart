@@ -26,8 +26,8 @@ import '../../../../core/error/exceptions.dart' as excpt;
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/network_info.dart';
 
-const clientId = '36906350da42c60d5dbc';
-const clientSecret = 'b8bdc0312c4417db13817543799a1d0baf22b353';
+const clientId = '';
+const clientSecret = '';
 
 class PlatformType {
   static const github = 'github';
