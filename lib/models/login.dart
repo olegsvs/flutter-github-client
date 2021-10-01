@@ -19,8 +19,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../utils/utils.dart';
 import 'account.dart';
 
-const clientId = '36906350da42c60d5dbc';
-const clientSecret = 'b8bdc0312c4417db13817543799a1d0baf22b353';
+const clientId = '';
+const clientSecret = '';
 
 class PlatformType {
   static const github = 'github';
